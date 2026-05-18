@@ -61,13 +61,14 @@ Painel admin: **http://127.0.0.1:8000/admin**
 
 ## 📋 Funcionalidades
 
-- ✅ Página Home com scroll suave (Hero, Serviços, Quem Somos, Equipe)
-- ✅ Galeria de fotos dos cortes com lightbox
-- ✅ Filtro de galeria por barbeiro
-- ✅ Navbar responsiva com menu hamburguer
-- ✅ Links para Instagram e WhatsApp
-- ✅ Painel administrativo completo
-- ✅ Totalmente personalizável por qualquer barbearia
+- ✅ Página Home com scroll suave (Hero, Serviços, Quem Somos, Equipe).
+- ✅ Galeria de fotos dos cortes com lightbox.
+- ✅ Filtro de galeria por barbeiro.
+- ✅ Navbar responsiva com menu hamburguer.
+- ✅ Links para Instagram e WhatsApp, add pelo admin.
+- ✅ Painel administrativo quase completo (ainda comcluido dashboard)
+- ✅ personalização do barbeiro ainda basica.
+
 
 ---
 
@@ -84,28 +85,4 @@ Acesse `/admin` e configure:
 
 ---
 
-## 📁 Estrutura do Projeto
 
-```
-sistemabarbearia/
-├── manage.py
-├── requirements.txt
-├── .gitignore
-├── README.md
-├── sistemabarbearia/
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-└── core/
-    ├── models.py       # ConfiguracaoBarbearia, Servico, Barbeiro, FotoGaleria
-    ├── views.py        # home, galeria
-    ├── urls.py
-    ├── admin.py
-    ├── templates/core/
-    │   ├── base.html
-    │   ├── home.html
-    │   └── galeria.html
-    └── static/core/
-        ├── css/style.css
-        └── js/main.js
-```
