@@ -3,10 +3,8 @@ from .models import ConfiguracaoBarbearia, Servico, Barbeiro, FotoGaleria
 
 
 def get_config():
-    """Retorna a primeira configuração existente ou cria uma padrão."""
-    config = ConfiguracaoBarbearia.objects.first()
-    if not config:
-        config = ConfiguracaoBarbearia.objects.create(nome='Minha Barbearia')
+    """Retorna a configuração da barbearia ou cria uma padrão."""
+    config, _ = ConfiguracaoBarbearia.objects.get_or_create(pk=1)
     return config
 
 
