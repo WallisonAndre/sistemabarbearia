@@ -1,12 +1,8 @@
 from django.shortcuts import render
 from .models import ConfiguracaoBarbearia, Servico, Barbeiro, FotoGaleria
 
-
 def get_config():
-    """Retorna a configuração da barbearia ou cria uma padrão."""
-    config, _ = ConfiguracaoBarbearia.objects.get_or_create(pk=1)
-    return config
-
+    return ConfiguracaoBarbearia.objects.first()
 
 def home(request):
     config = get_config()
