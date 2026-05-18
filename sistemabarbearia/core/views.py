@@ -1,0 +1,41 @@
+from django.shortcuts import render
+from .models import ConfiguracaoBarbearia, Servico, Barbeiro, FotoGaleria
+
+
+def get_config():
+    """Retorna a primeira configuração existente ou cria uma padrão."""
+    config = ConfiguracaoBarbearia.objects.first()
+    if not config:
+        config = ConfiguracaoBarbearia.objects.create(nome='Minha Barbearia')
+    return config
+
+
+def home(request):
+    config = get_config()
+    servicos = Servico.objects.filter(ativo=True)
+    barbeiros = Barbeiro.objects.filter(ativo=True)
+
+    context = {
+        'config': config,
+        'servicos': servicos,
+        'barbeiros': barbeiros,
+    }
+    return render(request, 'core/home.html', context)
+
+
+def galeria(request):
+    config = get_config()
+    fotos = FotoGaleria.objects.all()
+    barbeiros = Barbeiro.objects.filter(ativo=True)
+
+    barbeiro_id = request.GET.get('barbeiro')
+    if barbeiro_id:
+        fotos = fotos.filter(barbeiro_id=barbeiro_id)
+
+    context = {
+        'config': config,
+        'fotos': fotos,
+        'barbeiros': barbeiros,
+        'barbeiro_selecionado': barbeiro_id,
+    }
+    return render(request, 'core/galeria.html', context)
