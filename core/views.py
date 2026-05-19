@@ -13,6 +13,7 @@ def home(request):
         'config': config,
         'servicos': servicos,
         'barbeiros': barbeiros,
+        'dias_semana': ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
     }
     return render(request, 'core/home.html', context)
 

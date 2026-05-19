@@ -49,6 +49,8 @@ class Barbeiro(models.Model):
     bio = models.TextField(blank=True)
     foto = models.ImageField(upload_to='equipe/', blank=True, null=True)
     instagram = models.CharField(max_length=100, blank=True)
+    avaliacao = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
+    horarios_trabalho = models.TextField(blank=True, default='Seg a Sex: 09:00 - 19:00\nSáb: 09:00 - 17:00')
     ativo = models.BooleanField(default=True)
     ordem = models.PositiveIntegerField(default=0)
 
