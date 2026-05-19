@@ -33,6 +33,7 @@
       <!-- Menu -->
       <ul class="navbar-links">
         <li><a href="{% url 'core:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
+        <li><a href="{% url 'core:sobre' %}" class="nav-link {% if request.resolver_match.url_name == 'sobre' %}active{% endif %}">Sobre</a></li>
         <li><a href="{% url 'core:galeria' %}" class="nav-link {% if request.resolver_match.url_name == 'galeria' %}active{% endif %}">Galeria</a></li>
       </ul>
 
@@ -60,6 +61,7 @@
     <!-- Mobile menu -->
     <div class="mobile-menu" id="mobileMenu">
       <a href="{% url 'core:home' %}" class="mobile-link">Home</a>
+      <a href="{% url 'core:sobre' %}" class="mobile-link">Sobre</a>
       <a href="{% url 'core:galeria' %}" class="mobile-link">Galeria</a>
       <div class="mobile-social">
         {% if config.instagram_url %}

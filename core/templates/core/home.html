@@ -70,40 +70,6 @@
 </section>
 
 
-<!-- ===== QUEM SOMOS ===== -->
-<section class="section section-dark" id="sobre">
-  <div class="container quem-somos-grid">
-    <div class="quem-somos-text reveal">
-      <span class="section-tag">Nossa história</span>
-      <h2 class="section-title">Quem Somos</h2>
-      {% if config.descricao %}
-        <p>{{ config.descricao }}</p>
-      {% else %}
-        <p>Somos uma barbearia apaixonada pela arte do corte. Fundada com o propósito de oferecer uma experiência única, combinamos técnica refinada com atendimento personalizado. Aqui cada cliente é tratado com atenção aos detalhes que merece.</p>
-        <p>Nossa equipe é formada por profissionais experientes e dedicados, prontos para transformar seu visual com estilo e precisão.</p>
-      {% endif %}
-      {% if config.endereco %}
-      <p class="sobre-info"><i class="bi bi-geo-alt-fill"></i> {{ config.endereco }}</p>
-      {% endif %}
-      {% if config.horario_funcionamento %}
-      <p class="sobre-info"><i class="bi bi-clock-fill"></i> {{ config.horario_funcionamento }}</p>
-      {% endif %}
-    </div>
-    <div class="quem-somos-visual reveal">
-      <div class="decorative-card">
-        <div class="deco-number">+</div>
-        <p class="deco-label">Anos de experiência e<br>clientes satisfeitos</p>
-        <div class="deco-icons">
-          <i class="bi bi-scissors"></i>
-          <i class="bi bi-star-fill"></i>
-          <i class="bi bi-award-fill"></i>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
 <!-- ===== EQUIPE ===== -->
 <section class="section" id="equipe">
   <div class="container">

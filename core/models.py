@@ -23,7 +23,7 @@ class ConfiguracaoBarbearia(models.Model):
 class Servico(models.Model):
     """Serviços oferecidos pela barbearia."""
     nome = models.CharField(max_length=100)
-    descricao = models.TextField()
+    descricao = models.TextField(blank=True)
     preco = models.DecimalField(max_digits=8, decimal_places=2)
     duracao_minutos = models.PositiveIntegerField(default=30)
     icone = models.CharField(

@@ -17,6 +17,14 @@ def home(request):
     return render(request, 'core/home.html', context)
 
 
+def sobre(request):
+    config = get_config()
+    context = {
+        'config': config,
+    }
+    return render(request, 'core/sobre.html', context)
+
+
 def galeria(request):
     config = get_config()
     fotos = FotoGaleria.objects.all()
