@@ -82,3 +82,69 @@ class FotoGaleria(models.Model):
 
     def __str__(self):
         return self.titulo or f'Foto {self.pk}'
+
+
+class Produto(models.Model):
+    """Produtos vendidos na barbearia."""
+    nome = models.CharField(max_length=100)
+    descricao = models.TextField(blank=True)
+    preco = models.DecimalField(max_digits=8, decimal_places=2)
+    estoque = models.PositiveIntegerField(default=0)
+    ativo = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = 'Produto'
+        verbose_name_plural = 'Produtos'
+        ordering = ['nome']
+
+    def __str__(self):
+        return self.nome
+
+
+class Venda(models.Model):
+    """Venda de produtos."""
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    quantidade = models.PositiveIntegerField(default=1)
+    valor_total = models.DecimalField(max_digits=8, decimal_places=2)
+    data_venda = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Venda'
+        verbose_name_plural = 'Vendas'
+        ordering = ['-data_venda']
+
+    def __str__(self):
+        return f'{self.quantidade}x {self.produto.nome} em {self.data_venda.strftime("%d/%m/%Y")}'
+
+
+class Agendamento(models.Model):
+    """Agendamentos de serviços."""
+    STATUS_CHOICES = [
+        ('pendente', 'Pendente'),
+        ('confirmado', 'Confirmado'),
+        ('concluido', 'Concluído'),
+        ('cancelado', 'Cancelado'),
+    ]
+
+    cliente_nome = models.CharField(max_length=100)
+    cliente_telefone = models.CharField(max_length=20)
+    servico = models.ForeignKey(Servico, on_delete=models.CASCADE)
+    barbeiro = models.ForeignKey(Barbeiro, on_delete=models.CASCADE)
+    
+    data = models.DateField()
+    hora_inicio = models.TimeField()
+    hora_fim = models.TimeField()
+    
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente')
+    valor_cobrado = models.DecimalField(max_digits=8, decimal_places=2)
+    
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Agendamento'
+        verbose_name_plural = 'Agendamentos'
+        ordering = ['-data', '-hora_inicio']
+
+    def __str__(self):
+        return f'{self.cliente_nome} - {self.servico.nome} com {self.barbeiro.nome} ({self.data})'
+

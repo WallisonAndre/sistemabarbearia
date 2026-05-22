@@ -1,0 +1,353 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Agendar Horário — {{ config.nome }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .agendar-container {
+    max-width: 800px;
+    margin: 120px auto 60px;
+    padding: 0 24px;
+  }
+  .step {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .step.active {
+    display: block;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .step-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .step-title {
+    font-family: var(--font-display);
+    color: var(--gold);
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+  
+  .grid-opcoes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .opcao-card {
+    background: var(--dark-2);
+    border: 2px solid var(--dark-3);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .opcao-card:hover {
+    border-color: var(--gold-dark);
+  }
+  .opcao-card.selected {
+    border-color: var(--gold);
+    background: rgba(201, 168, 76, 0.1);
+  }
+  
+  .opcao-icon {
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 15px;
+  }
+  .opcao-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 15px;
+    border: 2px solid var(--gold);
+  }
+  
+  .opcao-title {
+    font-weight: 500;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+  }
+  .opcao-preco {
+    color: var(--gold);
+    font-weight: 700;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--gray);
+  }
+  .form-control {
+    width: 100%;
+    padding: 12px 15px;
+    background: var(--dark-3);
+    border: 1px solid var(--dark-3);
+    color: var(--white);
+    border-radius: 8px;
+    font-family: var(--font-body);
+  }
+  .form-control:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+  
+  .horarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+  }
+  .horario-btn {
+    background: var(--dark-3);
+    color: var(--white);
+    border: 1px solid var(--dark-3);
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+  }
+  .horario-btn.selected {
+    background: var(--gold);
+    color: var(--dark);
+    font-weight: bold;
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+  }
+  .btn-voltar {
+    background: transparent;
+    color: var(--gray);
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  .btn-voltar:hover {
+    color: var(--white);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="agendar-container">
+  
+  <!-- PASSO 1: SERVIÇO -->
+  <div class="step active" id="step1">
+    <div class="step-header">
+      <h2 class="step-title">Escolha o Serviço</h2>
+      <p>O que vamos fazer hoje?</p>
+    </div>
+    
+    <div class="grid-opcoes">
+      {% for servico in servicos %}
+      <div class="opcao-card" onclick="selectServico({{ servico.id }}, '{{ servico.nome }}')">
+        <div class="opcao-icon"><i class="bi {{ servico.icone|default:'bi-scissors' }}"></i></div>
+        <div class="opcao-title">{{ servico.nome }}</div>
+        <div class="opcao-preco">R$ {{ servico.preco }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- PASSO 2: PROFISSIONAL -->
+  <div class="step" id="step2">
+    <div class="step-header">
+      <h2 class="step-title">Escolha o Profissional</h2>
+      <p>Com quem você quer cortar?</p>
+    </div>
+    
+    <div class="grid-opcoes">
+      {% for barbeiro in barbeiros %}
+      <div class="opcao-card" onclick="selectBarbeiro({{ barbeiro.id }}, '{{ barbeiro.nome }}')">
+        {% if barbeiro.foto %}
+        <img src="{{ barbeiro.foto.url }}" alt="{{ barbeiro.nome }}" class="opcao-img">
+        {% else %}
+        <div class="opcao-icon" style="font-size: 3rem;"><i class="bi bi-person-circle"></i></div>
+        {% endif %}
+        <div class="opcao-title">{{ barbeiro.nome }}</div>
+        <div style="font-size: 0.9rem; color: #f1c40f;"><i class="bi bi-star-fill"></i> {{ barbeiro.avaliacao }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    
+    <div class="actions">
+      <button class="btn-voltar" onclick="goToStep(1)"><i class="bi bi-arrow-left"></i> Voltar</button>
+    </div>
+  </div>
+
+  <!-- PASSO 3: DATA E HORA -->
+  <div class="step" id="step3">
+    <div class="step-header">
+      <h2 class="step-title">Quando?</h2>
+      <p>Escolha o melhor horário para você.</p>
+    </div>
+    
+    <div class="form-group">
+      <label>Data</label>
+      <input type="date" id="data_agendamento" class="form-control" onchange="gerarHorarios()">
+    </div>
+    
+    <div class="form-group">
+      <label>Horários Disponíveis</label>
+      <div class="horarios-grid" id="horarios-container">
+        <!-- Gerado via JS -->
+      </div>
+    </div>
+    
+    <div class="actions">
+      <button class="btn-voltar" onclick="goToStep(2)"><i class="bi bi-arrow-left"></i> Voltar</button>
+      <button class="btn btn-primary" id="btn-next-3" onclick="goToStep(4)" style="display:none;">Continuar <i class="bi bi-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- PASSO 4: CONFIRMAÇÃO -->
+  <div class="step" id="step4">
+    <div class="step-header">
+      <h2 class="step-title">Quase lá!</h2>
+      <p>Confirme seus dados para finalizar o agendamento.</p>
+    </div>
+    
+    <div style="background: var(--dark-2); padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+      <h4 style="color: var(--gold); margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">Resumo do Agendamento</h4>
+      <p><strong>Serviço:</strong> <span id="resumo-servico"></span></p>
+      <p><strong>Profissional:</strong> <span id="resumo-barbeiro"></span></p>
+      <p><strong>Data:</strong> <span id="resumo-data"></span> às <span id="resumo-hora"></span></p>
+    </div>
+    
+    <div class="form-group">
+      <label>Seu Nome Completo</label>
+      <input type="text" id="cliente_nome" class="form-control" placeholder="Ex: João Silva">
+    </div>
+    
+    <div class="form-group">
+      <label>Seu WhatsApp</label>
+      <input type="text" id="cliente_telefone" class="form-control" placeholder="Ex: 84999999999">
+    </div>
+    
+    <div class="actions">
+      <button class="btn-voltar" onclick="goToStep(3)"><i class="bi bi-arrow-left"></i> Voltar</button>
+      <button class="btn btn-primary btn-large" onclick="finalizarAgendamento()">
+        <i class="bi bi-whatsapp"></i> Confirmar e Falar no WhatsApp
+      </button>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let agendamento = {
+    servico_id: null,
+    servico_nome: '',
+    barbeiro_id: null,
+    barbeiro_nome: '',
+    data: '',
+    hora: '',
+    nome: '',
+    telefone: ''
+  };
+
+  // Definir data mínima para hoje
+  const hoje = new Date().toISOString().split('T')[0];
+  document.getElementById('data_agendamento').setAttribute('min', hoje);
+
+  function goToStep(step) {
+    document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+    document.getElementById('step' + step).classList.add('active');
+    
+    if(step === 4) {
+      document.getElementById('resumo-servico').textContent = agendamento.servico_nome;
+      document.getElementById('resumo-barbeiro').textContent = agendamento.barbeiro_nome;
+      
+      const dataFormatada = agendamento.data.split('-').reverse().join('/');
+      document.getElementById('resumo-data').textContent = dataFormatada;
+      document.getElementById('resumo-hora').textContent = agendamento.hora;
+    }
+  }
+
+  function selectServico(id, nome) {
+    agendamento.servico_id = id;
+    agendamento.servico_nome = nome;
+    goToStep(2);
+  }
+
+  function selectBarbeiro(id, nome) {
+    agendamento.barbeiro_id = id;
+    agendamento.barbeiro_nome = nome;
+    goToStep(3);
+  }
+
+  function gerarHorarios() {
+    agendamento.data = document.getElementById('data_agendamento').value;
+    const container = document.getElementById('horarios-container');
+    container.innerHTML = '';
+    
+    if(!agendamento.data) return;
+    
+    // Gerar horários fictícios de 09:00 as 18:00
+    const horarios = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'];
+    
+    horarios.forEach(h => {
+      const btn = document.createElement('div');
+      btn.className = 'horario-btn';
+      btn.textContent = h;
+      btn.onclick = function() {
+        document.querySelectorAll('.horario-btn').forEach(b => b.classList.remove('selected'));
+        this.classList.add('selected');
+        agendamento.hora = h;
+        document.getElementById('btn-next-3').style.display = 'block';
+      };
+      container.appendChild(btn);
+    });
+  }
+
+  function finalizarAgendamento() {
+    agendamento.nome = document.getElementById('cliente_nome').value;
+    agendamento.telefone = document.getElementById('cliente_telefone').value;
+    
+    if(!agendamento.nome || !agendamento.telefone) {
+      alert("Por favor, preencha seu nome e telefone.");
+      return;
+    }
+    
+    // Salvar no backend via API
+    fetch('/api/agendar/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(agendamento)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if(data.status === 'success') {
+        // Redirecionar pro WhatsApp
+        const numero = "{{ config.whatsapp_numero|default:'' }}";
+        const msg = `Olá! Gostaria de confirmar meu agendamento.\n\n*Nome:* ${agendamento.nome}\n*Serviço:* ${agendamento.servico_nome}\n*Profissional:* ${agendamento.barbeiro_nome}\n*Data:* ${agendamento.data.split('-').reverse().join('/')} às ${agendamento.hora}`;
+        const zapLink = `https://wa.me/${numero}?text=${encodeURIComponent(msg)}`;
+        window.location.href = zapLink;
+      } else {
+        alert("Erro ao agendar: " + data.message);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Ocorreu um erro. Tente novamente.");
+    });
+  }
+</script>
+{% endblock %}

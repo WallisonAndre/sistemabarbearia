@@ -1,0 +1,234 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard — {{ config.nome }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .dashboard-container {
+    max-width: 1200px;
+    margin: 100px auto 60px;
+    padding: 0 24px;
+  }
+  
+  .dash-header {
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .dash-title {
+    font-family: var(--font-display);
+    color: var(--gold);
+    font-size: 2.5rem;
+    line-height: 1.2;
+  }
+  .dash-date {
+    color: var(--gray);
+    font-size: 1.1rem;
+  }
+  
+  /* Cards de Resumo */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 50px;
+  }
+  .stat-card {
+    background: var(--dark-2);
+    border: 1px solid var(--dark-3);
+    border-radius: var(--radius);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 4px; height: 100%;
+    background: var(--gold);
+  }
+  .stat-title {
+    color: var(--gray);
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--white);
+    font-family: var(--font-display);
+  }
+  .stat-icon {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    font-size: 4rem;
+    color: rgba(255,255,255,0.03);
+  }
+  
+  /* Timeline Grid */
+  .agenda-section {
+    background: var(--dark-2);
+    border-radius: var(--radius);
+    padding: 30px;
+    border: 1px solid var(--dark-3);
+  }
+  .agenda-title {
+    font-size: 1.5rem;
+    color: var(--gold);
+    margin-bottom: 20px;
+    font-family: var(--font-display);
+  }
+  
+  .timeline-wrapper {
+    overflow-x: auto;
+  }
+  .timeline {
+    display: flex;
+    gap: 20px;
+    min-width: 800px;
+  }
+  .timeline-col {
+    flex: 1;
+    background: var(--dark-3);
+    border-radius: 8px;
+    padding: 15px;
+  }
+  .col-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--dark);
+    margin-bottom: 15px;
+  }
+  .col-header img {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .col-header h3 {
+    font-size: 1.1rem;
+    margin: 0;
+  }
+  
+  .agendamento-card {
+    background: var(--dark);
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    border-left: 3px solid var(--gold);
+  }
+  .agendamento-time {
+    color: var(--gold);
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+  }
+  .agendamento-info {
+    font-size: 0.95rem;
+  }
+  .agendamento-servico {
+    color: var(--gray);
+    font-size: 0.85rem;
+  }
+  .agendamento-status {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-top: 5px;
+    font-weight: bold;
+  }
+  .status-pendente { background: #f39c12; color: #fff; }
+  .status-confirmado { background: #3498db; color: #fff; }
+  .status-concluido { background: #2ecc71; color: #fff; }
+  
+  .empty-agenda {
+    text-align: center;
+    color: var(--gray);
+    padding: 20px 0;
+    font-size: 0.9rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  
+  <div class="dash-header">
+    <div>
+      <h1 class="dash-title">Visão Geral</h1>
+      <div class="dash-date">{{ hoje|date:"l, d \d\e F \d\e Y" }}</div>
+    </div>
+    <div>
+      <a href="/admin/" class="btn btn-outline" target="_blank"><i class="bi bi-gear"></i> Painel Admin</a>
+    </div>
+  </div>
+  
+  <!-- Cards de Resumo -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-title">Faturamento Hoje</div>
+      <div class="stat-value">R$ {{ faturamento_total|floatformat:2 }}</div>
+      <i class="bi bi-currency-dollar stat-icon"></i>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-title">Cortes Agendados</div>
+      <div class="stat-value">{{ total_cortes }}</div>
+      <i class="bi bi-scissors stat-icon"></i>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-title">Produtos Vendidos</div>
+      <div class="stat-value">{{ produtos_vendidos }}</div>
+      <i class="bi bi-box-seam stat-icon"></i>
+    </div>
+  </div>
+  
+  <!-- Agenda da Equipe -->
+  <div class="agenda-section">
+    <h2 class="agenda-title">Agenda da Equipe (Hoje)</h2>
+    
+    <div class="timeline-wrapper">
+      <div class="timeline">
+        {% for info in agenda_equipe %}
+        <div class="timeline-col">
+          <div class="col-header">
+            {% if info.barbeiro.foto %}
+            <img src="{{ info.barbeiro.foto.url }}" alt="{{ info.barbeiro.nome }}">
+            {% else %}
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center;"><i class="bi bi-person"></i></div>
+            {% endif %}
+            <h3>{{ info.barbeiro.nome }}</h3>
+          </div>
+          
+          <div class="col-body">
+            {% if info.agendamentos %}
+              {% for ag in info.agendamentos %}
+              <div class="agendamento-card">
+                <div class="agendamento-time">{{ ag.hora_inicio|time:"H:i" }} - {{ ag.hora_fim|time:"H:i" }}</div>
+                <div class="agendamento-info">{{ ag.cliente_nome }}</div>
+                <div class="agendamento-servico">{{ ag.servico.nome }} — R$ {{ ag.valor_cobrado }}</div>
+                <div class="agendamento-status status-{{ ag.status }}">{{ ag.get_status_display }}</div>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="empty-agenda">Nenhum agendamento para hoje.</div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    
+  </div>
+
+</div>
+{% endblock %}

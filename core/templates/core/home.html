@@ -24,8 +24,8 @@
     {% endif %}
     <div class="hero-actions">
       {% if config.whatsapp_numero %}
-      <a href="https://wa.me/{{ config.whatsapp_numero }}" target="_blank" class="btn btn-primary">
-        <i class="bi bi-whatsapp"></i> Agendar agora
+      <a href="{% url 'core:agendar' %}" class="btn btn-primary">
+        <i class="bi bi-calendar-check"></i> Agendar agora
       </a>
       {% endif %}
       <a href="#servicos" class="btn btn-outline">Ver serviços</a>
@@ -50,7 +50,7 @@
     {% if servicos %}
     <div class="cards-grid">
       {% for servico in servicos %}
-      <div class="card-servico reveal">
+      <div class="card-servico">
         <div class="card-icon">
           <i class="bi {{ servico.icone|default:'bi-scissors' }}"></i>
         </div>
@@ -82,7 +82,7 @@
     {% if barbeiros %}
     <div class="equipe-grid">
       {% for barbeiro in barbeiros %}
-      <div class="card-barbeiro reveal" onclick="openBarbeiroModal('{{ barbeiro.id }}')" style="cursor: pointer;">
+      <div class="card-barbeiro" onclick="openBarbeiroModal('{{ barbeiro.id }}')" style="cursor: pointer;">
         <div class="barbeiro-foto-wrap">
           {% if barbeiro.foto %}
             <img src="{{ barbeiro.foto.url }}" alt="{{ barbeiro.nome }}" class="barbeiro-foto">
@@ -241,8 +241,8 @@
       <h2 class="cta-title">Pronto para um novo visual?</h2>
       <p class="cta-sub">Agende agora pelo WhatsApp e garanta seu horário.</p>
     </div>
-    <a href="https://wa.me/{{ config.whatsapp_numero }}" target="_blank" class="btn btn-primary btn-large">
-      <i class="bi bi-whatsapp"></i> Falar no WhatsApp
+    <a href="{% url 'core:agendar' %}" class="btn btn-primary btn-large">
+      <i class="bi bi-calendar-check"></i> Agendar Agora
     </a>
   </div>
 </section>

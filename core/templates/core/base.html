@@ -35,6 +35,10 @@
         <li><a href="{% url 'core:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
         <li><a href="{% url 'core:sobre' %}" class="nav-link {% if request.resolver_match.url_name == 'sobre' %}active{% endif %}">Sobre</a></li>
         <li><a href="{% url 'core:galeria' %}" class="nav-link {% if request.resolver_match.url_name == 'galeria' %}active{% endif %}">Galeria</a></li>
+        <li><a href="{% url 'core:agendar' %}" class="nav-link {% if request.resolver_match.url_name == 'agendar' %}active{% endif %}" style="color: var(--gold); font-weight: bold;">Agendar Agora</a></li>
+        {% if request.user.is_staff %}
+        <li><a href="{% url 'core:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+        {% endif %}
       </ul>
 
       <!-- Redes Sociais -->
@@ -63,6 +67,10 @@
       <a href="{% url 'core:home' %}" class="mobile-link">Home</a>
       <a href="{% url 'core:sobre' %}" class="mobile-link">Sobre</a>
       <a href="{% url 'core:galeria' %}" class="mobile-link">Galeria</a>
+      <a href="{% url 'core:agendar' %}" class="mobile-link" style="color: var(--gold); font-weight: bold;">Agendar Agora</a>
+      {% if request.user.is_staff %}
+      <a href="{% url 'core:dashboard' %}" class="mobile-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      {% endif %}
       <div class="mobile-social">
         {% if config.instagram_url %}
         <a href="{{ config.instagram_url }}" target="_blank" class="social-btn"><i class="bi bi-instagram"></i></a>
